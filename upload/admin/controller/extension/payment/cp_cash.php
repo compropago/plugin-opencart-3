@@ -43,8 +43,8 @@ class ControllerExtensionPaymentCpCash extends Controller
             try {
                 $uri = explode("admin/index.php",$_SERVER["REQUEST_URI"]);
                 $uri = $uri[0];
-                $webhook_url = $this->site_url() . $uri . "index.php?route=payment/cp_cash/webhook";
-
+                $webhook_url = $this->site_url() . $uri . "index.php?route=extension/payment/cp_cash/webhook";
+ 
                 $client = new Client($this->public_key, $this->private_key, $this->mode);
                 $client->api->createWebhook($webhook_url);
             } catch(Exception $e) {
