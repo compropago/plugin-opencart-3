@@ -32,7 +32,7 @@ class ControllerExtensionPaymentCpCash extends Controller
             $this->config->get('payment_cp_cash_private_key'),
             $this->config->get('payment_cp_cash_mode') == '1' ? true : false
         );
-
+        
         $allow_providers = explode(',', $this->config->get('payment_cp_cash_providers'));
         $all_providers = $client->api->listProviders(floatval($order_info['total']), $order_info['currency_code']);
 
@@ -62,7 +62,7 @@ class ControllerExtensionPaymentCpCash extends Controller
                 $this->config->get('payment_cp_cash_private_key'),
                 $this->config->get('payment_cp_cash_mode') == '1' ? true : false
             );
-
+            
             $order_id = $this->session->data['order_id'];
             $order_info = $this->model_checkout_order->getOrder($order_id);
             $products = $this->cart->getProducts();
@@ -79,50 +79,52 @@ class ControllerExtensionPaymentCpCash extends Controller
                 'customer_name' => $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'],
                 'customer_email' => $order_info['email'],
                 'currency' => $order_info['currency_code'],
+                'image_url' => null,
                 'payment_type' => $this->request->post['payment_type'],
                 'app_client_name' => 'opencart',
                 'app_client_version' => VERSION
             ];
-
+            
             try {
-                $order = Factory::getInstanceOf('PlaceOrderInfo', $data_order);
-                $response = $client->api->placeOrder($order);
-
+                $ordercp = Factory::getInstanceOf('PlaceOrderInfo', $data_order);
+                
+                $response = $client->api->placeOrder($ordercp) ;
+                
                 $recordTime = time();
                 $order_id = $order_info['order_id'];
                 $ioIn = base64_encode(json_encode($response));
                 $ioOut = base64_encode(json_encode($data_order));
 
-                $query = "INSERT INTO " . DB_PREFIX . "compropago_orders 
-                    (`date`,`modified`,`compropagoId`,`compropagoStatus`,`storeCartId`,`storeOrderId`,`storeExtra`,`ioIn`,`ioOut`)".
-                    " values (:fecha:,:modified:,':cpid:',':cpstat:',':stcid:',':stoid:',':ste:',':ioin:',':ioout:')";
+                // $query = "INSERT INTO " . DB_PREFIX . "compropago_orders 
+                //     (`date`,`modified`,`compropagoId`,`compropagoStatus`,`storeCartId`,`storeOrderId`,`storeExtra`,`ioIn`,`ioOut`)".
+                //     " values (:fecha:,:modified:,':cpid:',':cpstat:',':stcid:',':stoid:',':ste:',':ioin:',':ioout:')";
 
-                $query = str_replace(":fecha:", $recordTime, $query);
-                $query = str_replace(":modified:", $recordTime, $query);
-                $query = str_replace(":cpid:", $response->id, $query);
-                $query = str_replace(":cpstat:", $response->type, $query);
-                $query = str_replace(":stcid:", $order_id, $query);
-                $query = str_replace(":stoid:", $order_id, $query);
-                $query = str_replace(":ste:", $response->type, $query);
-                $query = str_replace(":ioin:", $ioIn, $query);
-                $query = str_replace(":ioout:", $ioOut, $query);
+                // $query = str_replace(":fecha:", $recordTime, $query);
+                // $query = str_replace(":modified:", $recordTime, $query);
+                // $query = str_replace(":cpid:", $response->id, $query);
+                // $query = str_replace(":cpstat:", $response->type, $query);
+                // $query = str_replace(":stcid:", $order_id, $query);
+                // $query = str_replace(":stoid:", $order_id, $query);
+                // $query = str_replace(":ste:", $response->type, $query);
+                // $query = str_replace(":ioin:", $ioIn, $query);
+                // $query = str_replace(":ioout:", $ioOut, $query);
 
-                $this->db->query($query);
+                // $this->db->query($query);
 
-                $compropagoOrderId = $this->db->getLastId();
-                $query2 = "INSERT INTO ".DB_PREFIX."compropago_transactions
-                    (orderId,date,compropagoId,compropagoStatus,compropagoStatusLast,ioIn,ioOut)
-                    values (:orderid:,:fecha:,':cpid:',':cpstat:',':cpstatl:',':ioin:',':ioout:')";
+                // $compropagoOrderId = $this->db->getLastId();
+                // $query2 = "INSERT INTO ".DB_PREFIX."compropago_transactions
+                //     (orderId,date,compropagoId,compropagoStatus,compropagoStatusLast,ioIn,ioOut)
+                //     values (:orderid:,:fecha:,':cpid:',':cpstat:',':cpstatl:',':ioin:',':ioout:')";
 
-                $query2 = str_replace(":orderid:", $compropagoOrderId, $query2);
-                $query2 = str_replace(":fecha:", $recordTime, $query2);
-                $query2 = str_replace(":cpid:", $response->id, $query2);
-                $query2 = str_replace(":cpstat:", $response->type, $query2);
-                $query2 = str_replace(":cpstatl:", $response->type, $query2);
-                $query2 = str_replace(":ioin:", $ioIn, $query2);
-                $query2 = str_replace(":ioout:", $ioOut, $query2);
+                // $query2 = str_replace(":orderid:", $compropagoOrderId, $query2);
+                // $query2 = str_replace(":fecha:", $recordTime, $query2);
+                // $query2 = str_replace(":cpid:", $response->id, $query2);
+                // $query2 = str_replace(":cpstat:", $response->type, $query2);
+                // $query2 = str_replace(":cpstatl:", $response->type, $query2);
+                // $query2 = str_replace(":ioin:", $ioIn, $query2);
+                // $query2 = str_replace(":ioout:", $ioOut, $query2);
 
-                $this->db->query($query2);
+                // $this->db->query($query2);
 
                 $query_update = "UPDATE ".DB_PREFIX."order SET order_status_id = 1 WHERE order_id = $order_id";
                 $this->db->query($query_update);
@@ -186,11 +188,11 @@ class ControllerExtensionPaymentCpCash extends Controller
         try{
             $client = new Client($publickey, $privatekey, $live);
 
-            if($resp_webhook->short_id == "000000"){
+            if($resp_webhook->id == "ch_00000-000-0000-000000"){
                 $this->response->setOutput(json_encode([
                     'status' => 'success',
                     'message' => 'OK - test',
-                    'short_id' => $resp_webhook->short_id,
+                    'short_id' => $resp_webhook->id,
                     'reference' => $resp_webhook->order_info->order_id
                 ]));
                 return;
@@ -219,7 +221,7 @@ class ControllerExtensionPaymentCpCash extends Controller
                     $this->response->setOutput(json_encode([
                         'status' => 'success',
                         'message' => 'OK - ' . $response->type,
-                        'short_id' => $response->short_id,
+                        'short_id' => $response->id,
                         'reference' => $response->order_info->order_id
                     ]));
                     return;
@@ -230,7 +232,7 @@ class ControllerExtensionPaymentCpCash extends Controller
                     $this->response->setOutput(json_encode([
                         'status' => 'error',
                         'message' => 'invalid webhook type',
-                        'short_id' => $response->short_id,
+                        'short_id' => $response->id,
                         'reference' => $response->order_info->order_id
                     ]));
                     return;
@@ -241,8 +243,8 @@ class ControllerExtensionPaymentCpCash extends Controller
             $recordTime = time();
             $query = "UPDATE ". DB_PREFIX ."compropago_orders SET
                 modified = ".$recordTime.",
-                compropagoStatus = '".$response->type."',
-                storeExtra = '".$response->type."'
+                compropagoStatus = '".$response->status."',
+                storeExtra = '".$response->status."'
                 WHERE id = ".$id;
 
             $this->db->query($query);
@@ -256,7 +258,7 @@ class ControllerExtensionPaymentCpCash extends Controller
             $query2 = str_replace(":orderid:", $this_order->row['id'], $query2);
             $query2 = str_replace(":fecha:", $recordTime, $query2);
             $query2 = str_replace(":cpid:", $response->id, $query2);
-            $query2 = str_replace(":cpstat:", $response->type, $query2);
+            $query2 = str_replace(":cpstat:", $response->status, $query2);
             $query2 = str_replace(":cpstatl:", $this_order->row['compropagoStatus'], $query2);
             $query2 = str_replace(":ioin:", $ioIn, $query2);
             $query2 = str_replace(":ioout:", $ioOut, $query2);
@@ -266,7 +268,7 @@ class ControllerExtensionPaymentCpCash extends Controller
             $this->response->setOutput(json_encode([
                 'status' => 'success',
                 'message' => 'OK - ' . $response->type,
-                'short_id' => $resp_webhook->short_id,
+                'short_id' => $resp_webhook->id,
                 'reference' => $resp_webhook->order_info->order_id
             ]));
             return;

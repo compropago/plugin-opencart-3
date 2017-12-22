@@ -120,7 +120,7 @@ class Service
             'app_client_name' => $neworder->app_client_name,
             'app_client_version' => $neworder->app_client_version,        
         ];
-
+        
         $response = Request::post($this->client->deployUri.'charges/', $params, $this->getAuth());
         return Factory::getInstanceOf('NewOrderInfo', $response);
     }
