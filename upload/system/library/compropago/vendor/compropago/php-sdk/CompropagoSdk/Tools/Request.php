@@ -2,21 +2,15 @@
 
 namespace CompropagoSdk\Tools;
 
-/**
- * Class Request
- * @package CompropagoSdk\Tools
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class Request
 {
     /**
-     * Validate if the source data is an error
-     *
+     * Validates response from Request
+     * 
      * @param string $response
-     * @return bool
+     * @return boolean
      * @throws \Exception
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     private static function validateResponse($response)
@@ -35,13 +29,13 @@ class Request
     }
 
     /**
-     * Execute GET request
-     *
+     * Execute Get request
+     * 
      * @param string $url
      * @param array $auth
      * @param array $headers
-     * @return mixed
-     *
+     * @return string
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public static function get($url, $auth=array(), $headers=array())
@@ -55,18 +49,17 @@ class Request
         self::validateResponse($res);
 
         return $res;
-
     }
 
     /**
-     * Execute POST request
-     *
+     * Execute Post request
+     * 
      * @param string $url
      * @param array $data
      * @param array $auth
      * @param array $headers
-     * @return mixed
-     *
+     * @return string
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public static function post($url, $data=array(), $auth=array(), $headers=array())
@@ -84,14 +77,14 @@ class Request
     }
 
     /**
-     * Execute PUT request
-     *
+     * Execute Put request
+     * 
      * @param string $url
      * @param array $data
      * @param array $auth
      * @param array $headers
-     * @return mixed
-     *
+     * @return string
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public static function put($url, $data=array(), $auth=array(), $headers=array())
@@ -109,14 +102,14 @@ class Request
     }
 
     /**
-     * Execute DELETE request
-     *
+     * Execute Delete request
+     * 
      * @param string $url
      * @param array $data
      * @param array $auth
      * @param array $headers
-     * @return mixed
-     *
+     * @return string
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public static function delete($url, $data=array(), $auth=array(), $headers=array())

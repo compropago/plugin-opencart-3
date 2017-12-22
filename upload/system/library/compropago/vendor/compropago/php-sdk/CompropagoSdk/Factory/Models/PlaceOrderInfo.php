@@ -3,13 +3,8 @@
 namespace CompropagoSdk\Factory\Models;
 
 use CompropagoSdk\Client;
+use CompropagoSdk\Service;
 
-/**
- * Class PlaceOrderInfo
- * @package CompropagoSdk\Factory\Models
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class PlaceOrderInfo
 {
     public $order_id;
@@ -17,6 +12,7 @@ class PlaceOrderInfo
     public $order_price;
     public $customer_name;
     public $customer_email;
+    public $cutomer_phone;
     public $payment_type;
     public $currency;
     public $expiration_time;
@@ -24,23 +20,6 @@ class PlaceOrderInfo
     public $app_client_name;
     public $app_client_version;
 
-    /**
-     * Constrcutor
-     *
-     * @param string $order_id
-     * @param string $order_name
-     * @param float $order_price
-     * @param string $customer_name
-     * @param string $customer_email
-     * @param string $payment_type
-     * @param string $currency
-     * @param int $expiration_time
-     * @param string $image_url
-     * @param string $app_client_name
-     * @param string $app_client_version
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
-     */
     public function __construct(
         $order_id, 
         $order_name, 

@@ -3,36 +3,24 @@
 namespace CompropagoSdk;
 
 use CompropagoSdk\Factory\Factory;
+use CompropagoSdk\Factory\Models\PlaceOrderInfo;
 use CompropagoSdk\Tools\Request;
 
-/**
- * Class Service
- * @package CompropagoSdk
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class Service
 {
     private $client;
 
-    /**
-     * Service constructor.
-     *
-     * @param Client $client
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
-     */
     public function __construct(Client $client)
     {
         $this->client = $client;
     }
 
     /**
-     * Get auth info
-     *
+     * Obtain auth array
+     * 
      * @return array
      * 
-     * @author Eduardo Aguilar <dante.aguilar@gmail.com>
+     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     private function getAuth()
     {
@@ -43,8 +31,8 @@ class Service
     }
 
     /**
-     * Get default Providers
-     *
+     * List default providers without api_keys
+     * 
      * @return array
      * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
@@ -58,15 +46,16 @@ class Service
     }
 
     /**
-     * Get list providers by account
-     *
-     * @param float $limit
+     * Return a list of providers according thir transacction limits.
+     * Need a valid Client session.
+     * 
+     * @param int $limit
      * @param string $currency
      * @return array
      * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
-    public function listProviders($limit = 0.0, $currency='MXN')
+    public function listProviders($limit = 0, $currency='MXN')
     {
         $url = $this->client->deployUri . 'providers/';
 
@@ -84,8 +73,8 @@ class Service
     }
 
     /**
-     * Get info of an order
-     *
+     * Obtain current order info
+     * 
      * @param string $orderId
      * @return \CompropagoSdk\Factory\Models\CpOrderInfo
      * 
@@ -98,14 +87,14 @@ class Service
     }
 
     /**
-     * Create new order
-     *
-     * @param \CompropagoSdk\Factory\Models\PlaceOrderInfo $neworder
+     * Create an instance of Info to create an order
+     * 
+     * @param PlaceOrderInfo $neworder
      * @return \CompropagoSdk\Factory\Models\NewOrderInfo
      * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
-    public function placeOrder($neworder)
+    public function placeOrder(PlaceOrderInfo $neworder)
     {
         $params = [
             'order_id' => $neworder->order_id,
@@ -118,16 +107,16 @@ class Service
             'expiration_time' => $neworder->expiration_time,
             'image_url' => $neworder->image_url,
             'app_client_name' => $neworder->app_client_name,
-            'app_client_version' => $neworder->app_client_version,        
+            'app_client_version' => $neworder->app_client_version,
         ];
-        
+
         $response = Request::post($this->client->deployUri.'charges/', $params, $this->getAuth());
         return Factory::getInstanceOf('NewOrderInfo', $response);
     }
 
     /**
      * Send SMS instructions for an order
-     *
+     * 
      * @param string $number
      * @param string $orderId
      * @return \CompropagoSdk\Factory\Models\SmsInfo
@@ -143,8 +132,8 @@ class Service
     }
 
     /**
-     * Create new webhook Url
-     *
+     * Register a webhook
+     * 
      * @param string $url
      * @return \CompropagoSdk\Factory\Models\Webhook
      * 
@@ -159,8 +148,8 @@ class Service
     }
 
     /**
-     * Get list of webhooks
-     *
+     * List al current webhooks
+     * 
      * @return array
      * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
@@ -172,45 +161,25 @@ class Service
     }
 
     /**
-     * Update a webhook url
-     *
+     * Update the URL of a webhook
+     * 
      * @param string $webhookId
      * @param string $url
-     * @param string $type (secondary | primary)
      * @return \CompropagoSdk\Factory\Models\Webhook
      * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
-    public function updateWebhook($webhookId, $url=null, $type=null)
+    public function updateWebhook($webhookId, $url)
     {
-        $params = [
-            'url' => $url,
-            'webhookType' => $type
-        ];
+        $params = ['url' => $url];
 
         $response = Request::put($this->client->deployUri.'webhooks/stores/'.$webhookId.'/', $params, $this->getAuth());
         return Factory::getInstanceOf('Webhook', $response);
     }
 
     /**
-     * Deactive a webhook URL
-     *
-     * @param string $webhookId
-     * @return \CompropagoSdk\Factory\Models\Webhook
+     * Delete a webhook
      * 
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
-     */
-    public function deactiveWebhook($webhookId)
-    {
-        $url = $this->client->deployUri.'webhooks/stores/'.$webhookId.'/deactive';
-
-        $response = Request::delete($url, null, $this->getAuth());
-        return Factory::getInstanceOf('Webhook', $response);
-    }
-
-    /**
-     * Delete a webhook URL
-     *
      * @param string $webhookId
      * @return \CompropagoSdk\Factory\Models\Webhook
      * 

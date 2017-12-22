@@ -19,20 +19,14 @@ use CompropagoSdk\Factory\Models\SmsInfo;
 use CompropagoSdk\Factory\Models\SmsObject;
 use CompropagoSdk\Factory\Models\Webhook;
 
-/**
- * Class Serialize
- * @package CompropagoSdk\Factory
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class Serialize
 {
     /**
-     * Create an instance of CpOrderInfo Object
-     *
+     * Make CpOrderInfo instance
+     * 
      * @param array $data
      * @return CpOrderInfo
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public static function cpOrderInfo($data=array())
@@ -43,21 +37,24 @@ class Serialize
             $obj = new CpOrderInfo();
 
             $obj->id = $data['id'];
-            $obj->short_id = $data['short_id'];
             $obj->type = $data['type'];
             $obj->object = $data['object'];
-            $obj->livemode = $data['livemode'];
-            $obj->created_at = $data['created_at'];
-            $obj->accepted_at = $data['accepted_at'];
-            $obj->expires_at = $data['expires_at'];
+            $obj->created = $data['created'];
             $obj->paid = $data['paid'];
             $obj->amount = $data['amount'];
+            $obj->livemode = $data['livemode'];
             $obj->currency = $data['currency'];
             $obj->refunded = $data['refunded'];
             $obj->fee = $data['fee'];
             $obj->fee_details = self::feeDetails($data['fee_details']);
             $obj->order_info = self::orderInfo($data['order_info']);
             $obj->customer = self::customer($data['customer']);
+            $obj->captured = $data['captured'];
+            $obj->failure_message = $data['failure_message'];
+            $obj->failure_code = $data['failure_code'];
+            $obj->amount_refunded = $data['amount_refunded'];
+            $obj->description = $data['description'];
+            $obj->dispute = $data['dispute'];
             $obj->api_version = $data['api_version'];
 
             return $obj;
@@ -65,12 +62,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of Customer Object
-     *
+     * Make Customer instance
+     * 
      * @param array $data
      * @return Customer
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function customer($data=array())
     {
@@ -88,12 +85,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of EvalAuthInfo Object
-     *
+     * Make EvalAuthInfo instance
+     * 
      * @param array $data
      * @return EvalAuthInfo
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function evalAuthInfo($data=array())
     {
@@ -113,12 +110,12 @@ class Serialize
     }
 
     /**
-     * Create an instance FeeDetails Object
-     *
+     * Make FeeDetails instance
+     * 
      * @param array $data
      * @return FeeDetails
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function feeDetails($data=array())
     {
@@ -130,7 +127,9 @@ class Serialize
             $obj->amount = isset($data['amount']) ? $data['amount'] : null;
             $obj->currency = isset($data['currency']) ? $data['currency'] : null;
             $obj->type = isset($data['type']) ? $data['type'] : null;
+            $obj->description = isset($data['description']) ? $data['description'] : null;
             $obj->application = isset($data['application']) ? $data['application'] : null;
+            $obj->tax_percent = isset($data['tax_percent']) ? $data['tax_percent'] : null;
             $obj->amount_refunded = isset($data['amount_refunded']) ? $data['amount_refunded'] : null;
             $obj->tax = isset($data['tax']) ? $data['tax'] : null;
 
@@ -139,12 +138,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of InstructionDetails Object
-     *
+     * Make InstructionDetails instance
+     * 
      * @param array $data
      * @return InstructionDetails
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function instructionDetails($data=array())
     {
@@ -171,12 +170,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of Instructions Object
-     *
+     * Make Instructions instance
+     * 
      * @param array $data
      * @return Instructions
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function instructions($data=array())
     {
@@ -199,12 +198,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of NewOrderInfo Object
-     *
+     * Make NewOrderInfo instance
+     * 
      * @param array $data
      * @return NewOrderInfo
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function newOrderInfo($data=array())
     {
@@ -215,20 +214,13 @@ class Serialize
 
             $obj->id = $data['id'];
             $obj->short_id = $data['short_id'];
-            $obj->type = $data['type'];
             $obj->object = $data['object'];
-            $obj->livemode = $data['livemode'];
-            $obj->created_at = $data['created_at'];
-            $obj->accepted_at = $data['accepted_at'];
-            $obj->expires_at = $data['expires_at'];
-            $obj->paid = $data['paid'];
-            $obj->amount = $data['amount'];
-            $obj->currency = $data['currency'];
-            $obj->refunded = $data['refunded'];
-            $obj->fee = $data['fee'];
-            $obj->fee_details = self::feeDetails($data['fee_details']);
+            $obj->status = $data['status'];
+            $obj->created = $data['created'];
+            $obj->exp_date = $data['exp_date'];
+            $obj->live_mode = $data['live_mode'];
             $obj->order_info = self::orderInfo($data['order_info']);
-            $obj->customer = self::customer($data['customer']);
+            $obj->fee_details = self::feeDetails($data['fee_details']);
             $obj->instructions = self::instructions($data['instructions']);
             $obj->api_version = $data['api_version'];
 
@@ -237,12 +229,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of Exchange Object
-     *
+     * Make Exchange instance
+     * 
      * @param array $data
      * @return Exchange
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function exchange($data=array())
     {
@@ -253,23 +245,23 @@ class Serialize
 
             $obj->rate = $data['rate'];
             $obj->request = $data['request'];
-            $obj->exchange_id = $data['exchange_id'];
-            $obj->final_amount = $data['final_amount'];
             $obj->origin_amount = $data['origin_amount'];
-            $obj->final_currency = $data['final_currency'];
+            $obj->final_amount = $data['final_amount'];
             $obj->origin_currency = $data['origin_currency'];
+            $obj->final_currency = $data['final_currency'];
+            $obj->exchange_id = $data['exchange_id'];
 
             return $obj;
         }
     }
 
     /**
-     * Create an instance of OrderInfo Object
-     *
+     * Make OrderInfo instance
+     * 
      * @param array $data
      * @return OrderInfo
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function orderInfo($data=array())
     {
@@ -281,13 +273,7 @@ class Serialize
             $obj->order_id = isset($data['order_id']) ? $data['order_id'] : null;
             $obj->order_name = isset($data['order_name']) ? $data['order_name'] : null;
             $obj->order_price = isset($data['order_price']) ? $data['order_price'] : null;
-            $obj->payment_method = isset($data['payment_method']) ? $data['payment_method'] : null;
-            $obj->store = isset($data['store']) ? $data['store'] : null;
-            $obj->country = isset($data['country']) ? $data['country'] : null;
             $obj->image_url = isset($data['image_url']) ? $data['image_url'] : null;
-            $obj->success_url = isset($data['success_url']) ? $data['success_url'] : null;
-            $obj->failed_url = isset($data['failed_url']) ? $data['failed_url'] : null;
-
             $obj->exchage = self::exchange($data['exchange']);
 
             return $obj;
@@ -295,12 +281,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of PlaceOrderInfo Object
-     *
+     * Make PlaceOrderInfo instance
+     * 
      * @param array $data
      * @return PlaceOrderInfo
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function placeOrderInfo($data=array())
     {
@@ -317,19 +303,19 @@ class Serialize
                 empty($data['currency']) ? 'MXN' : $data['currency'],
                 empty($data['expiration_time']) ? null : $data['expiration_time'],
                 empty($data['image_url']) ? '': $data['image_url'],
-                empty($data['app_client_name']) ? 'php-sdk' : $data['app_client_name'],
+                empty($data['app_client_name']) ? 'phpsdk' : $data['app_client_name'],
                 empty($data['app_client_version']) ? Client::VERSION : $data['app_client_version']
             );
         }
     }
 
     /**
-     * Create an instance of Provider Object
-     *
+     * Make Provider instance
+     * 
      * @param array $data
      * @return Provider
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function provider($data=array())
     {
@@ -338,28 +324,29 @@ class Serialize
         } else {
             $obj = new Provider();
 
-            $obj->internal_name = $data['internal_name'];
-            $obj->availability = $data['availability'];
             $obj->name = $data['name'];
-            $obj->rank = $data['rank'];
-            $obj->transaction_limit = $data['transaction_limit'];
-            $obj->commission = $data['commission'];
-            $obj->is_active = $data['is_active'];
             $obj->store_image = $data['store_image'];
+            $obj->availability = $data['availability'];
+            $obj->is_active = $data['is_active'];
+            $obj->internal_name = $data['internal_name'];
             $obj->image_small = $data['image_small'];
             $obj->image_medium = $data['image_medium'];
+            $obj->image_large = $data['image_large'];
+            $obj->transaction_limit = $data['transaction_limit'];
+            $obj->rank = $data['rank'];
+            $obj->commission = $data['commission'];
 
             return $obj;
         }
     }
 
     /**
-     * Create an instance of SmsData Object
-     *
+     * Make SmsData instance
+     * 
      * @param array $data
      * @return SmsData
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function smsData($data=array())
     {
@@ -375,12 +362,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of SmsInfo Object
-     *
+     * Make SmsInfo instance
+     * 
      * @param array $data
      * @return SmsInfo
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function smsInfo($data=array())
     {
@@ -398,12 +385,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of SmsObject Object
-     *
+     * Make SmsObject instance
+     * 
      * @param array $data
      * @return SmsObject
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function smsObject($data=array())
     {
@@ -421,12 +408,12 @@ class Serialize
     }
 
     /**
-     * Create an instance of Webhook Object
-     *
+     * Make Webhook instance
+     * 
      * @param array $data
      * @return Webhook
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@fmail.com>
      */
     public static function webhook($data=array())
     {
@@ -439,7 +426,6 @@ class Serialize
             $obj->url = isset($data['url']) ? $data['url'] : null;
             $obj->mode = isset($data['mode']) ? $data['mode'] : null;
             $obj->status = isset($data['status']) ? $data['status'] : null;
-            $obj->type = isset($data['type']) ? $data['type'] : null;
 
             return $obj;
         }

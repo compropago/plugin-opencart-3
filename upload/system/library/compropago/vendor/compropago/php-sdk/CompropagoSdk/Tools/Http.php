@@ -2,12 +2,6 @@
 
 namespace CompropagoSdk\Tools;
 
-/**
- * Class Http
- * @package CompropagoSdk\Tools
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class Http
 {
     private $url;
@@ -17,8 +11,11 @@ class Http
     private $extra_headers;
 
     /**
-     * Http constructor.
-     * @param $url
+     * Constructor
+     * 
+     * @param string $url
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public function __construct($url)
     {
@@ -26,11 +23,10 @@ class Http
     }
 
     /**
-     * Set method request
-     *
+     * Set HTTP Method for the request
+     * 
      * @param string $method
-     * @throws \Exception
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public function setMethod($method)
@@ -48,10 +44,10 @@ class Http
     }
 
     /**
-     * Set basic auth credentials for request
-     *
+     * Set basic auth params for the request
+     * 
      * @param array $auth
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public function setAuth(array $auth)
@@ -64,10 +60,10 @@ class Http
     }
 
     /**
-     * Set array data to send JSON
-     *
+     * Set json data for the request
+     * 
      * @param array $data
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public function setData(array $data)
@@ -78,10 +74,10 @@ class Http
     }
 
     /**
-     * Set extra request headers
-     *
+     * Set request headers
+     * 
      * @param array $headers
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public function setExtraHeaders(array $headers)
@@ -92,11 +88,11 @@ class Http
     }
 
     /**
-     * Execute an return response request
-     *
-     * @return mixed
+     * Execute requesto from previous configuration
+     * 
+     * @return string
      * @throws \Exception
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public function executeRequest()

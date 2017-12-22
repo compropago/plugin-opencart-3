@@ -5,24 +5,18 @@ namespace CompropagoSdk\Tools;
 use CompropagoSdk\Client;
 use CompropagoSdk\Factory\Factory;
 
-/**
- * Class Validations
- * @package CompropagoSdk\Tools
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class Validations
 {
     /**
-     * Eval credentials of the configuration in Client
-     *
+     * Verify Client Auth
+     * 
      * @param Client $client
-     * @return mixed
+     * @return CompropagoSdk\Factory\Models\EvalAuthInfo
      * @throws \Exception
-     *
-     * @author Eduardo Aguilar <dante.aguilar41@gmail.com
+     * 
+     * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
-    public static function evalAuth( Client $client )
+    public static function evalAuth(Client $client)
     {
         $response = Request::get(
             $client->deployUri."users/auth/",
@@ -40,15 +34,15 @@ class Validations
     }
 
     /**
-     * Validate if the credentias has some error
-     *
+     * Validate Gateway errors
+     * 
      * @param Client $client
-     * @return bool
+     * @return boolean
      * @throws \Exception
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
-    public static function validateGateway( Client $client )
+    public static function validateGateway(Client $client)
     {
         if(empty($client)){
             throw new \Exception("Client object is not valid");

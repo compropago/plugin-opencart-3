@@ -2,22 +2,16 @@
 
 namespace CompropagoSdk\Factory;
 
-/**
- * Class Factory
- * @package CompropagoSdk\Factory
- *
- * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
- */
 class Factory
 {
     /**
-     * Generates an instace of any model in the library by passing the class name and source data
-     *
-     * @param string $class
+     * Generate an instance of a class from sorce data
+     * 
+     * @param $class
      * @param array $data
      * @return mixed
      * @throws \Exception
-     *
+     * 
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
     public static function getInstanceOf($class, $data=array())

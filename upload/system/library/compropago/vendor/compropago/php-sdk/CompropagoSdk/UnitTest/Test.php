@@ -33,8 +33,8 @@ use CompropagoSdk\Tools\Validations;
 
 class Test extends \PHPUnit_Framework_TestCase
 {
-    private $publickey  = "pk_test_638e8b14112423a086";
-    private $privatekey = "sk_test_9c95e149614142822f";
+    private $publickey  = "pk_test_8781245a88240f9cf";
+    private $privatekey = "sk_test_56e31883637446b1b";
     private $mode = false;
     
     private $phonenumber = "5561463627";
@@ -51,12 +51,14 @@ class Test extends \PHPUnit_Framework_TestCase
     public function testCreateClient()
     {
         $res = false;
+        
         try {
             $client = new Client($this->publickey, $this->privatekey, $this->mode);
             $res = true;
         } catch(\Exception $e) {
             echo "====>>".$e->getMessage()."\n";
         }
+
         $this->assertTrue($res);
     }
 
@@ -95,7 +97,7 @@ class Test extends \PHPUnit_Framework_TestCase
             $client = new Client($this->publickey, $this->privatekey, $this->mode);
             $response = $client->api->listDefaultProviders();
 
-            $res = is_array($response);
+            $res = ($response[0] instanceof Provider && sizeof($response) == 13);
         } catch (\Exception $e) {
             echo "====>>".$e->getMessage()."\n";
         }
@@ -129,7 +131,7 @@ class Test extends \PHPUnit_Framework_TestCase
             $client = new Client($this->publickey, $this->privatekey, $this->mode);
             $provs = $client->api->listProviders(700, 'USD');
 
-            foreach ($provs as $key => $prov) {
+            foreach ($provs as $prov) {
                 if ($prov->transaction_limit < $this->limit) {
                     $flag = false;
                     break;
@@ -171,7 +173,7 @@ class Test extends \PHPUnit_Framework_TestCase
             $order = Factory::getInstanceOf('PlaceOrderInfo', $this->order_info);
             $response = $client->api->placeOrder($order);
 
-            $res = $epoch == $response->expires_at;
+            $res = $epoch == $response->exp_date;
         } catch (\Exception $e) {
             echo "====>> ".$e->getMessage();
         }
@@ -188,7 +190,7 @@ class Test extends \PHPUnit_Framework_TestCase
             $order_aux = $client->api->placeOrder($order);
             $response = $client->api->verifyOrder($order_aux->id);
 
-            $res = $response instanceof CpOrderInfo && !empty($response->id);
+            $res = $response instanceof CpOrderInfo;
         } catch (\Exception $e) {
             echo "====>>".$e->getMessage()."\n";
         }
@@ -253,23 +255,6 @@ class Test extends \PHPUnit_Framework_TestCase
             $res = $response instanceof Webhook;
         } catch(\Exception $e) {
             echo "====>>".$e->getMessage()."\n";
-        }
-
-        $this->assertTrue($res);
-    }
-
-    public function testDeactiveWebhook()
-    {
-        $res = false;
-        try {
-            $client = new Client($this->publickey, $this->privatekey, $this->mode);
-
-            $webhookId = "8b1f9725-54c5-4733-994b-b1e0f9c50baa";
-            $webhook = $client->api->deactiveWebhook($webhookId);
-
-            $res = $webhook->status == 'deactivated';
-        } catch (\Exception $e) {
-            echo "\n".$e->getMessage()."\n";
         }
 
         $this->assertTrue($res);
