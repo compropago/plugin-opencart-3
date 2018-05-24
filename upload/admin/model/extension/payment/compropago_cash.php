@@ -1,21 +1,13 @@
 <?php
 
 class ModelExtensionPaymentCompropagoCash extends Model {
-
+    /**
+     * Add ComproPago Column for transaction data in orders table
+     */
     public function install() {
-        $row = $this->db->query("
-            SELECT count(*) as num_exists
-            FROM information_schema.COLUMNS
-            WHERE
-                TABLE_SCHEMA = '" . DB_DATABASE . "'
-            AND TABLE_NAME = '" . DB_PREFIX . "order'
-            AND COLUMN_NAME = 'compropago_data'"
-        );
-
-        if (count($row) == 0) {
-            $this->db->query("alter table " . DB_PREFIX . "order add column compropago_data text default null");
+        try {
+            $this->db->query("ALTER TABLE `" . DB_PREFIX . "order` ADD COLUMN compropago_data TEXT DEFAULT NULL");
+        } catch (Exception $e) {
         }
     }
-
-
 }
