@@ -1,0 +1,194 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a id="save_config" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                    <i class="fa fa-save"></i>
+                </a>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="mode" class="col-sm-2 control-label">
+                            <span data-toggle="tooltip" title="{{ help_mode }}">{{ entry_compropago_mode }}</span>
+                        </label>
+                        <div class="col-sm-10">
+                            <select name="payment_compropago_mode" id="mode" class="form-control">
+                                <option value="1" {{ payment_compropago_mode ? 'selected' : '' }}>
+                                    {{ entry_compropago_mode_active }}
+                                </option>
+                                <option value="0" {{ not payment_compropago_mode ? 'selected' : '' }}>
+                                    {{ entry_compropago_mode_test }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="public_key">
+                            {{ entry_compropago_publickey }}
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                   name="payment_compropago_publickey"
+                                   class="form-control"
+                                   placeholder="{{ entry_compropago_publickey }}"
+                                   id="public_key"
+                                   value="{{ payment_compropago_publickey }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="private_key">
+                            {{ entry_compropago_privatekey }}
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                   name="payment_compropago_privatekey"
+                                   class="form-control"
+                                   placeholder="{{ entry_compropago_privatekey }}"
+                                   id="private_key"
+                                   value="{{ payment_compropago_privatekey }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <img src="https://compropago.com/plugins/compropago-efectivo-v2.svg" alt="ComproPago" style="height: 20px;"> -
+                    {{ text_cash_section }}
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="status">{{ entry_cash_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="payment_compropago_cash_status" id="status" class="form-control">
+                                <option value="0" {{ payment_compropago_cash_status == '0' ? 'selected="selected"' : '' }}>
+                                    {{ text_disabled }}
+                                </option>
+                                <option value="1" {{ payment_compropago_cash_status == '1' ? 'selected="selected"' : '' }}>
+                                    {{ text_enabled }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="title">{{ entry_cash_title }}</label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                   name="payment_compropago_cash_title"
+                                   value="{{ payment_compropago_cash_title }}"
+                                   placeholder="{{ entry_cash_title }}"
+                                   id="title"
+                                   class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="providers" class="col-sm-2 control-label">{{ entry_cash_providers }}</label>
+                        <div class="col-sm-5">
+                            <label for="deactive_providers">{{ entry_cash_deactive_providers }}</label>
+                            <select id="deactive_providers" multiple="" class="form-control"style="height:100px;">
+                                {% for provider in deactive_providers %}
+                                    <option value="{{ provider.internal_name }}">{{ provider.name }}</option>
+                                {% endfor %}
+                            </select> <br>
+
+                            <a id="deactive_provider" href="#" class="btn btn-primary" style="width:100%">{{ entry_cash_active_providers }}</a>
+                        </div>
+
+                        <div class="col-sm-5">
+                            <label for="active_providers">{{ entry_cash_active_providers }}</label>
+                            <select id="active_providers" multiple="" class="form-control" style="height:100px;">
+                                {% for provider in active_providers %}
+                                    <option value="{{ provider.internal_name }}">{{ provider.name }}</option>
+                                {% endfor %}
+                            </select> <br>
+                            <a id="active_provider" href="#" class="btn btn-primary" style="width:100%">{{ entry_cash_deactive_providers }}</a>
+                        </div>
+
+                        <input id="providers" name="payment_compropago_cash_providers" type="hidden" value="{{ payment_compropago_cash_providers }}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="sort_order">{{ entry_cash_sort_order }}</label>
+                        <div class="col-sm-10">
+                            <input type="text"
+                                   name="payment_compropago_cash_sort_order"
+                                   value="{{ payment_compropago_cash_sort_order }}"
+                                   placeholder="{{ entry_cash_sort_order }}"
+                                   id="sort_order"
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $('#active_provider').click(function(e){
+        e.preventDefault();
+        $("#active_providers option").each(function(){
+            if($(this).is(':selected')){
+                $('#deactive_providers').append('<option value="'+$(this).val()+'">'+$(this).html()+'</option>');
+                $(this).remove();
+            }
+        });
+    });
+
+    $('#deactive_provider').click(function(e){
+        e.preventDefault();
+        $("#deactive_providers option").each(function(){
+            if($(this).is(':selected')){
+                $('#active_providers').append('<option value="'+$(this).val()+'">'+$(this).html()+'</option>');
+                $(this).remove();
+            }
+        });
+    });
+
+    $('#save_config').click(function(e) {
+        e.preventDefault();
+        var active = '';
+
+        $('#active_providers option').each(function(){
+            if (active === '') {
+                active += $(this).val();
+            } else {
+                active += ','+$(this).val();
+            }
+        });
+
+        console.log(active);
+
+        $('#providers').val(active);
+        $('#form-payment').submit();
+    });
+</script>
+{{ footer }}
