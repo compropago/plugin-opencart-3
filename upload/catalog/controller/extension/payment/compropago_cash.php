@@ -94,12 +94,12 @@ class ControllerExtensionPaymentCompropagoCash extends Controller {
         );
 
         $order_info = [
-            'order_id' => $this->session->data['order_id'],
-            'order_name' => $this->session->data['order_id'],
+            'order_id' => "{$this->session->data['order_id']}",
+            'order_name' => "{$this->session->data['order_id']}",
             'order_price' => floatval($order['total']),
             'customer_name' => $order['payment_firstname'] . ' ' . $order['payment_lastname'],
             'customer_email' => $order['email'],
-            'currency' => $order['currency_code'],
+            'currency' => strtoupper($order['currency_code']),
             'payment_type' => $this->request->post['provider'],
             'app_client_name' => 'opencart',
             'app_client_version' => VERSION
