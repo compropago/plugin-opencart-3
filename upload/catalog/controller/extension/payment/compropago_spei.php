@@ -3,205 +3,238 @@
  * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
  */
 
-class ControllerExtensionPaymentCompropagoSpei extends Controller {
-    /**
-     * Render form in checkout
-     * @return mixed
-     */
-    public function index() {
-        $this->language->load('extension/payment/compropago_spei');
+require_once __DIR__ . '/../../../../system/library/compropago/vendor/autoload.php';
 
-        $data['text_spei_details'] = $this->language->get('text_spei_details');
+use CompropagoSdk\Resources\Payments\Spei as sdkSpei;
 
-        return $this->load->view('extension/payment/compropago_spei_form', $data);
-    }
 
-    /**
-     * Action to create the cash order
-     */
-    public function confirm() {
-        $this->response->addHeader('Content-Type: application/json');
+class ControllerExtensionPaymentCompropagoSpei extends Controller
+{
+	/**
+	 * Render form in checkout
+	 * @return mixed
+	 */
+	public function index()
+	{
+		$this->language->load('extension/payment/compropago_spei');
 
-        $json = array();
+		$data['text_spei_details'] = $this->language->get('text_spei_details');
 
-        if ($this->session->data['payment_method']['code'] == 'compropago_spei') {
-            $this->load->model('checkout/order');
+		return $this->load->view('extension/payment/compropago_spei_form', $data);
+	}
 
-            $order = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+	/**
+	 * Action to create the cash order
+	 */
+	public function confirm()
+	{
+		$this->response->addHeader('Content-Type: application/json');
+		$json = [
+			'status'	=> null,
+			'message'	=> '',
+			'redirect'	=> false
+		];
 
-            try {
-                $new_order = $this->create_order($order);
-                $json['status']   = 'success';
-                $json['redirect'] = $this->url->link(
-                    'extension/payment/compropago/success&method=spei&cpid='. $new_order->id
-                );
-            }catch (Exception $e) {
-                $json['status']   = 'error';
-                $json['message']  = $e->getMessage();
-            }
-        }
+		if ($this->session->data['payment_method']['code'] == 'compropago_spei')
+		{
+			$this->load->model('checkout/order');
+			$order = $this->model_checkout_order->getOrder(
+				$this->session->data['order_id']
+			);
 
-        $this->response->setOutput(json_encode($json));
-        return;
-    }
+			try
+			{
+				$new_order = $this->create_order($order);
 
-    /**
-     * Success page for cash payments
-     * @return mixed
-     */
-    public function success() {
-        $data['cpid'] = isset($_GET['cpid']) ? $_GET['cpid'] : '';
+				$json['status']   = 'success';
+				$json['redirect'] = $this->url->link(
+					'extension/payment/compropago/success&method=spei&cpid='. $new_order->id
+				);
+			}
+			catch (Exception $e)
+			{
+				$json['status']   = 'error';
+				$json['message']  = $e->getMessage();
+			}
+		}
 
-        $this->clear_session();
-        $this->add_breadcrums($data);
-        $this->add_data($data);
-        $this->add_sections($data);
+		$this->response->setOutput(json_encode($json));
+		return;
+	}
 
-        $response = $this->load->view('extension/payment/compropago_cash_receipt', $data);
+	/**
+	 * Success page for cash payments
+	 * @return mixed
+	 */
+	public function success()
+	{
+		$data['cpid'] = isset($_GET['cpid']) ? $_GET['cpid'] : '';
 
-        return $this->response->setOutput($response);
-    }
+		$this->clear_session();
+		$this->add_breadcrums($data);
+		$this->add_data($data);
+		$this->add_sections($data);
 
-    /**
-     * Add user data to success page
-     * @param $data
-     */
-    private function add_data(&$data) {
-        $this->language->load('extension/payment/compropago_spei');
+		$response = $this->load->view('extension/payment/compropago_cash_receipt', $data);
 
-        if ($this->customer->isLogged()) {
-            $data['text_message'] = sprintf(
-                $this->language->get('text_customer'),
-                $this->url->link('account/account', '', true),
-                $this->url->link('account/order', '', true),
-                $this->url->link('account/download', '', true),
-                $this->url->link('information/contact')
-            );
-        } else {
-            $data['text_message'] = sprintf(
-                $this->language->get('text_guest'),
-                $this->url->link('information/contact')
-            );
-        }
-    }
+		return $this->response->setOutput($response);
+	}
 
-    /**
-     * Add view sections
-     * @param $data
-     */
-    private function add_sections(&$data) {
-        $data['continue'] = $this->url->link('common/home');
-        $data['column_left'] = $this->load->controller('common/column_left');
-        $data['column_right'] = $this->load->controller('common/column_right');
-        $data['content_top'] = $this->load->controller('common/content_top');
-        $data['content_bottom'] = $this->load->controller('common/content_bottom');
-        $data['footer'] = $this->load->controller('common/footer');
-        $data['header'] = $this->load->controller('common/header');
-    }
+	/**
+	 * Add user data to success page
+	 * @param $data
+	 */
+	private function add_data(&$data)
+	{
+		$this->language->load('extension/payment/compropago_spei');
 
-    /**
-     * Clear checkout session
-     */
-    private function clear_session() {
-        if (isset($this->session->data['order_id'])) {
-            $this->cart->clear();
+		if ($this->customer->isLogged())
+		{
+			$data['text_message'] = sprintf(
+				$this->language->get('text_customer'),
+				$this->url->link('account/account', '', true),
+				$this->url->link('account/order', '', true),
+				$this->url->link('account/download', '', true),
+				$this->url->link('information/contact')
+			);
+		}
+		else
+		{
+			$data['text_message'] = sprintf(
+				$this->language->get('text_guest'),
+				$this->url->link('information/contact')
+			);
+		}
+	}
 
-            unset($this->session->data['shipping_method']);
-            unset($this->session->data['shipping_methods']);
-            unset($this->session->data['payment_method']);
-            unset($this->session->data['payment_methods']);
-            unset($this->session->data['guest']);
-            unset($this->session->data['comment']);
-            unset($this->session->data['order_id']);
-            unset($this->session->data['coupon']);
-            unset($this->session->data['reward']);
-            unset($this->session->data['voucher']);
-            unset($this->session->data['vouchers']);
-            unset($this->session->data['totals']);
-        }
-    }
+	/**
+	 * Add view sections
+	 * @param $data
+	 */
+	private function add_sections(&$data)
+	{
+		$data['continue'] = $this->url->link('common/home');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['column_right'] = $this->load->controller('common/column_right');
+		$data['content_top'] = $this->load->controller('common/content_top');
+		$data['content_bottom'] = $this->load->controller('common/content_bottom');
+		$data['footer'] = $this->load->controller('common/footer');
+		$data['header'] = $this->load->controller('common/header');
+	}
 
-    /**
-     * Add breadcrums to the success page
-     * @param $data
-     */
-    private function add_breadcrums(&$data) {
-        $data['breadcrumbs'] = array();
+	/**
+	 * Clear checkout session
+	 */
+	private function clear_session()
+	{
+		$session_data = [
+			'shipping_method',
+			'shipping_methods',
+			'payment_method',
+			'payment_methods',
+			'guest',
+			'comment',
+			'order_id',
+			'coupon',
+			'reward',
+			'voucher',
+			'vouchers',
+			'totals'
+		];
+		if (isset($this->session->data['order_id']))
+		{
+			$this->cart->clear();
+			foreach ($session_data as $data) unset($this->session->data[$data]);
+		}
+	}
 
-        $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/home')
-        );
+	/**
+	 * Add breadcrums to the success page
+	 * @param $data
+	 */
+	private function add_breadcrums(&$data)
+	{
+		$data['breadcrumbs'] = [];
 
-        $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_basket'),
-            'href' => $this->url->link('checkout/cart')
-        );
+		$data['breadcrumbs'][] = [
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/home')
+		];
 
-        $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_checkout'),
-            'href' => $this->url->link('checkout/checkout', '', true)
-        );
+		$data['breadcrumbs'][] = [
+			'text' => $this->language->get('text_basket'),
+			'href' => $this->url->link('checkout/cart')
+		];
 
-        $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('text_success'),
-            'href' => $this->url->link('extension/payment/compropago_spei/success')
-        );
-    }
+		$data['breadcrumbs'][] = [
+			'text' => $this->language->get('text_checkout'),
+			'href' => $this->url->link('checkout/checkout', '', true)
+		];
 
-    /**
-     * Create compropago order
-     * @param array $order
-     * @return \CompropagoSdk\Factory\Models\NewOrderInfo
-     * @throws Exception
-     */
-    private function create_order($order) {
-        $this->load->model('extension/payment/compropago_spei');
+		$data['breadcrumbs'][] = [
+			'text' => $this->language->get('text_success'),
+			'href' => $this->url->link('extension/payment/compropago_spei/success')
+		];
+	}
 
-        $customer_name = $order['payment_firstname'] . ' ' . $order['payment_lastname'];
+	/**
+	 * Create compropago order
+	 * @param array $order
+	 * @return \CompropagoSdk\Factory\Models\NewOrderInfo
+	 * @throws Exception
+	 */
+	private function create_order($order)
+	{
+		$this->load->model('extension/payment/compropago_spei');
 
-        $order_info = array(
-            "product" => [
-                "id" => "{$this->session->data['order_id']}",
-                "price" => floatval($order['total']),
-                "name" => "{$this->session->data['order_id']}",
-                "url" => "",
-                "currency" => strtoupper($order['currency_code'])
-            ],
-            "customer" => [
-                "name" => $customer_name,
-                "email" => $order['email'],
-                "phone" => ""
-            ],
-            "payment" =>  [
-                "type" => "SPEI"
-            ]
-        );
+		$order_info = [
+			"product" => [
+				"id" => "{$this->session->data['order_id']}",
+				"price" => floatval($order['total']),
+				"name" => "{$this->session->data['order_id']}",
+				"url" => "",
+				"currency" => strtoupper($order['currency_code'])
+			],
+			"customer" => [
+				"name"	=> "{$order['payment_firstname']} {$order['payment_lastname']}",
+				"email" => $order['email'],
+				"phone" => "{$oder['telephone']}"
+			],
+			"payment" =>  [
+				"type" => "SPEI"
+			]
+		];
 
-        $new_order = $this->model_extension_payment_compropago_spei->createOrder($order_info);
+		$client = (new sdkSpei)->withKeys(
+			$this->config->get('payment_compropago_publickey'),
+			$this->config->get('payment_compropago_privatekey')
+		);
+		$new_order = $client->createOrder( $order_info );
+		$this->add_transaction($new_order);
 
-        $this->add_transaction($new_order);
+		return $new_order;
+	}
 
-        return $new_order;
-    }
+	/**
+	 * Add transaction information to the order
+	 * @param $order
+	 */
+	private function add_transaction($order)
+	{
+		$this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1);
 
-    /**
-     * Add transaction information to the order
-     * @param $order
-     */
-    private function add_transaction($order) {
-        $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1);
+		$data = [
+			'compropago_id'			=> $order['id'],
+			'compropago_short_id'	=> $order['shortId'],
+			'method'				=> 'spei'
+		];
 
-        $data = [
-            'compropago_id' => $order->id,
-            'compropago_short_id' => $order->shortId,
-            'method' => 'spei'
-        ];
+		$data = serialize($data);
 
-        $data = serialize($data);
+		$query = "UPDATE " . DB_PREFIX . "order
+		SET compropago_data = '{$data}'
+		WHERE order_id = {$this->session->data['order_id']}";
 
-        $query = "UPDATE " . DB_PREFIX . "order SET compropago_data = '{$data}' WHERE order_id = {$this->session->data['order_id']}";
-
-        $this->db->query($query);
-    }
+		$this->db->query($query);
+	}
 }

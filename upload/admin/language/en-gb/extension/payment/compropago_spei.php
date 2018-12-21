@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * English
+ */
+
 // Heading
 $_['heading_title']                 = 'ComproPago SPEI';
 
@@ -7,11 +12,15 @@ $_['text_enabled']                  = 'Enabled';
 $_['text_disabled']                 = 'Disabled';
 $_['text_extension']                = 'Extensions';
 $_['text_success']                  = 'Success: You have modified ComproPago SPEI payment module!';
-$_['text_edit']                     = 'ComproPago - General config';
+$_['text_edit']                     = 'General config';
 $_['text_spei_section']             = 'SPEI Gateway Config';
-$_['text_compropago_spei']          = "<a target='_BLANK' href='https://compropago.com'>" .
-                                        "<img src='https://compropago.com/plugins/compropago-spei-v2.svg' alt='ComproPago' title='CompropPago'/>" .
-                                      "</a>";
+$_['text_compropago_spei']          = "<a target='_blank' href='https://compropago.com'>" .
+										"<img src='https://compropago.com/plugins/compropago-spei-v2.svg' alt='ComproPago' title='CompropPago'/>" .
+									"</a>";
+$_['text_compropago_link_panel']		= "You can see this setting in ".
+									"<a target='_blank' href='https://panel.compropago.com/panel/configuracion'>" .
+										"ComproPago Panel" .
+									"</a>";
 
 // Entry generals
 $_['entry_compropago_mode']         = 'Mode';

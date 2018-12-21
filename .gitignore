@@ -1,3 +1,8 @@
 .DS_Store
 .vscode/
+.travis.yml
 *.zip
+phpunit.xml
+tests/
+examples/
+docs/
