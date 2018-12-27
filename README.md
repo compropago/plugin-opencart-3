@@ -7,8 +7,8 @@
 Este módulo permite la integración del servicio de ComproPago en tu eCommerce de OpenCart.
 Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
-[Registrarse en ComproPago](https://compropago.com/)
-[Comisiones](https://www.compropago.com/comisiones/)
+- [Registrarse en ComproPago](https://compropago.com/)
+- [Comisiones](https://www.compropago.com/comisiones/)
 
 ## Ayuda
 

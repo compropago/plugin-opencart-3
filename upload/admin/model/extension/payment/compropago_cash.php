@@ -11,12 +11,10 @@ class ModelExtensionPaymentCompropagoCash extends Model
         $query = "ALTER TABLE " . DB_PREFIX . "order
         ADD COLUMN compropago_data TEXT DEFAULT NULL";
         
-        try
-        {
+        try {
             $this->db->query( $query );
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
+            
         }
     }
 }
