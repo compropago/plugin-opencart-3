@@ -1,0 +1,1 @@
+zip compropago-oc3.ocmod.zip -r upload -x "*.DS_Store"
