@@ -2,15 +2,15 @@
 
 require_once __DIR__ . '/../../../../system/library/compropago/vendor/autoload.php';
 
-use CompropagoSdk\Client;
-use CompropagoSdk\Factory\Factory;
 
-class ControllerExtensionPaymentCompropago extends Controller {
+class ControllerExtensionPaymentCompropago extends Controller
+{
     /**
      * Webhook to approve an order of Cash or SPEI methods
      * @throws Exception
      */
-    public function webhook() {
+    public function webhook()
+    {
         $this->response->addHeader('Content-Type: application/json');
 
         $this->load->model('extension/payment/compropago_spei');
@@ -18,37 +18,34 @@ class ControllerExtensionPaymentCompropago extends Controller {
         $this->load->model('checkout/order');
 
         $json = [
-            'status' => 'success',
-            'message' => '',
-            'short_id' => null,
+            'status'    => 'success',
+            'message'   => '',
+            'short_id'  => null,
             'reference' => null,
         ];
-
-        $request = @file_get_contents('php://input');
+        $request = file_get_contents('php://input');
 
         try {
-            $orderInfo = Factory::getInstanceOf('CpOrderInfo', $request);
+            $orderInfo = json_decode($request, true);
 
-            if (empty($request) || empty($orderInfo->id)) {
-                $message = 'Invalid request';
-                throw new \Exception($message);
+            if (empty($request) || empty($orderInfo['id'])) {
+                throw new \Exception('Invalid request');
             }
 
-            if ($orderInfo->short_id == '000000') {
-                $json ['message'] = 'OK - TEST';
+            if ($orderInfo['short_id'] == '000000') {
+                $json ['message']	= 'OK - TEST';
+                $json ['short_id']	= $orderInfo['short_id'];
 
                 $this->response->setOutput(json_encode($json));
                 return;
             }
 
-            $order = $this->model_checkout_order->getOrder($orderInfo->order_info->order_id);
-
+            $order = $this->model_checkout_order->getOrder($orderInfo['order_info']['order_id']);
             if (empty($order)) {
-                $message = 'Order not found';
-                throw new \Exception($message);
+                throw new \Exception("Order not found");
             }
 
-            $transaction = $this->getTransaction($order, $orderInfo->id);
+            $transaction = $this->getTransaction($order, $orderInfo['id']);
 
             switch ($transaction['method']) {
                 case 'spei':
@@ -77,21 +74,22 @@ class ControllerExtensionPaymentCompropago extends Controller {
      * @return array
      * @throws Exception
      */
-    private function getTransaction($order, $cpid) {
-        $query = "SELECT compropago_data FROM `" . DB_PREFIX . "order` WHERE order_id = {$order['order_id']}";
+    private function getTransaction($order, $cpid)
+    {
+        $query = "SELECT compropago_data
+        FROM " . DB_PREFIX . "order
+        WHERE order_id = {$order['order_id']}";
 
         $result = $this->db->query($query);
 
         if ($result->num_rows < 1 || empty($result->row['compropago_data'])) {
-            $message = 'Can\'t find order transaction';
-            throw new \Exception($message);
+            throw new \Exception("Can't find order transaction");
         }
 
         $transaction = unserialize($result->row['compropago_data']);
 
         if ($cpid != $transaction['compropago_id']) {
-            $message = 'Order not found';
-            throw new \Exception($message);
+            throw new \Exception("Order not found");
         }
 
         return $transaction;
@@ -103,7 +101,8 @@ class ControllerExtensionPaymentCompropago extends Controller {
      * @param array $order
      * @throws Exception
      */
-    private function proccessSpei(&$json, $order, $transaction) {
+    private function proccessSpei(&$json, $order, $transaction)
+    {
         $verified = $this->model_extension_payment_compropago_spei->verifyOrder($transaction['compropago_id']);
 
         switch ($verified->status) {
@@ -128,7 +127,8 @@ class ControllerExtensionPaymentCompropago extends Controller {
      * @param array $transaction
      * @throws Exception
      */
-    private function proccessCash(&$json, $order, $transaction) {
+    private function proccessCash(&$json, $order, $transaction)
+    {
         $client = new Client(
             $this->config->get('payment_compropago_publickey'),
             $this->config->get('payment_compropago_privatekey'),
@@ -148,38 +148,43 @@ class ControllerExtensionPaymentCompropago extends Controller {
      * @param array $transaction
      * @throws Exception
      */
-    private function updateOrderStatus(&$json, $status, $order, $transaction) {
-        switch ($status) {
+    private function updateOrderStatus(&$json, $status, $order, $transaction)
+    {
+        switch ($status)
+        {
             case 'charge.success':
                 $status_id = 2;
                 break;
             case 'charge.pending':
-                $json['message'] = 'OK - ' . $status;
-                $json['short_id'] = $transaction['compropago_short_id'];
-                $json['reference'] = $order['order_id'];
+                $json['message']	= "OK - $status";
+                $json['short_id']	= $transaction['compropago_short_id'];
+                $json['reference']	= $order['order_id'];
                 return;
             case 'charge.expired':
                 $status_id = 14;
                 break;
             default:
-                $message = 'Invalid webhook type ' . $status;
-                throw new \Exception($message);
+                throw new \Exception("Invalid webhook type $status");
         }
 
-        $query = "UPDATE ". DB_PREFIX . "order SET order_status_id = ".$status_id." WHERE order_id = {$order['order_id']}";
+        $query = "UPDATE ". DB_PREFIX . "order
+        SET order_status_id = {$status_id}
+        WHERE order_id = {$order['order_id']}";
 
         $this->db->query($query);
 
-        $json['message'] = 'OK - ' . $status;
-        $json['short_id'] = $transaction['compropago_short_id'];
-        $json['reference'] = $order['order_id'];
+        $json['message']	= "OK - $status";
+        $json['short_id']	= $transaction['compropago_short_id'];
+        $json['reference']	= $order['order_id'];
+
         return;
     }
 
     /**
      * Render success page of ComproPago
      */
-    public function success() {
+    public function success()
+    {
         $this->language->load('extension/payment/compropago');
 
         $data['cpid'] = isset($_GET['cpid']) ? $_GET['cpid'] : '';
@@ -198,22 +203,25 @@ class ControllerExtensionPaymentCompropago extends Controller {
     /**
      * Clear checkout session
      */
-    private function clear_session() {
+    private function clear_session()
+    {
+        $session_data = [
+            'shipping_method',
+            'shipping_methods',
+            'payment_method',
+            'payment_methods',
+            'guest',
+            'comment',
+            'order_id',
+            'coupon',
+            'reward',
+            'voucher',
+            'vouchers',
+            'totals'
+        ];
         if (isset($this->session->data['order_id'])) {
             $this->cart->clear();
-
-            unset($this->session->data['shipping_method']);
-            unset($this->session->data['shipping_methods']);
-            unset($this->session->data['payment_method']);
-            unset($this->session->data['payment_methods']);
-            unset($this->session->data['guest']);
-            unset($this->session->data['comment']);
-            unset($this->session->data['order_id']);
-            unset($this->session->data['coupon']);
-            unset($this->session->data['reward']);
-            unset($this->session->data['voucher']);
-            unset($this->session->data['vouchers']);
-            unset($this->session->data['totals']);
+            foreach ($session_data as $data) unset($this->session->data[$data]);
         }
     }
 
@@ -221,39 +229,41 @@ class ControllerExtensionPaymentCompropago extends Controller {
      * Add breadcrums to the success page
      * @param $data
      */
-    private function add_breadcrums(&$data, $method) {
+    private function add_breadcrums(&$data, $method)
+    {
         $checkout_link = $this->url->link(
             "extension/payment/compropago/success&method=$method&cpid={$data['cpid']}"
         );
 
-        $data['breadcrumbs'] = array();
+        $data['breadcrumbs'] = [];
 
-        $data['breadcrumbs'][] = array(
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('text_home'),
             'href' => $this->url->link('common/home')
-        );
+        ];
 
-        $data['breadcrumbs'][] = array(
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('text_basket'),
             'href' => $this->url->link('checkout/cart')
-        );
+        ];
 
-        $data['breadcrumbs'][] = array(
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('text_checkout'),
             'href' => $this->url->link('checkout/checkout', '', true)
-        );
+        ];
 
-        $data['breadcrumbs'][] = array(
+        $data['breadcrumbs'][] = [
             'text' => $this->language->get('text_success'),
             'href' => $checkout_link
-        );
+        ];
     }
 
     /**
      * Add user data to success page
      * @param $data
      */
-    private function add_data(&$data) {
+    private function add_data(&$data)
+    {
         $this->language->load('extension/payment/compropago');
 
         if ($this->customer->isLogged()) {
@@ -276,13 +286,14 @@ class ControllerExtensionPaymentCompropago extends Controller {
      * Add view sections
      * @param $data
      */
-    private function add_sections(&$data) {
-        $data['continue'] = $this->url->link('common/home');
-        $data['column_left'] = $this->load->controller('common/column_left');
-        $data['column_right'] = $this->load->controller('common/column_right');
-        $data['content_top'] = $this->load->controller('common/content_top');
-        $data['content_bottom'] = $this->load->controller('common/content_bottom');
-        $data['footer'] = $this->load->controller('common/footer');
-        $data['header'] = $this->load->controller('common/header');
+    private function add_sections(&$data)
+    {
+        $data['continue']		= $this->url->link('common/home');
+        $data['column_left']	= $this->load->controller('common/column_left');
+        $data['column_right']	= $this->load->controller('common/column_right');
+        $data['content_top']	= $this->load->controller('common/content_top');
+        $data['content_bottom']	= $this->load->controller('common/content_bottom');
+        $data['footer']			= $this->load->controller('common/footer');
+        $data['header']			= $this->load->controller('common/header');
     }
 }

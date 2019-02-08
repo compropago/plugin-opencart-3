@@ -1,21 +1,31 @@
 <?php
-class ModelExtensionPaymentCompropagoCash extends Model {
+
+require_once __DIR__ . '/../../../../system/library/compropago/vendor/autoload.php';
+
+
+class ModelExtensionPaymentCompropagoCash extends Model
+{
+    const GATEWAY_NAME = 'compropago_cash';
+    const GATEWAY_LOGO = 'https://compropago.com/plugins/compropago-efectivo-v2.svg';
+
     /**
+     * Render Payment option in checkout
      * @param $address
      * @param $total
      * @return array
      */
-    public function getMethod($address, $total) {
-        $this->language->load('extension/payment/compropago_cash');
+    public function getMethod($address, $total)
+    {
+        $this->language->load( 'extension/payment/' . self::GATEWAY_NAME );
 
-        $title = '<img src="https://compropago.com/plugins/compropago-efectivo-v2.svg" style="height: 20px;">';
-        $title .= ' - ' . $this->config->get('payment_compropago_cash_title');
+        $title = '<img src="' . self::GATEWAY_LOGO . '" style="height: 20px;">'
+                . ' ' . $this->config->get('payment_' . self::GATEWAY_NAME . '_title');
 
-        return array(
-            'code'       => 'compropago_cash',
+        return [
+            'code'       => self::GATEWAY_NAME,
             'title'      => $title,
             'terms'      => '',
-            'sort_order' => $this->config->get('payment_compropago_cash_cash_sort_order')
-        );
+            'sort_order' => $this->config->get('payment_' . self::GATEWAY_NAME . '_sort_order')
+        ];
     }
 }
