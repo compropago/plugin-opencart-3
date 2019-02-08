@@ -1,7 +1,7 @@
 .DS_Store
 .vscode/
 .travis.yml
-*.zip
+*.ocmod.zip
 phpunit.xml
 tests/
 examples/
