@@ -1,6 +1,4 @@
 .DS_Store
 .vscode/
 *.ocmod.zip
-
-# ignore vendor
 upload/system/library/compropago/vendor/

@@ -17,5 +17,3 @@ find . -name ".DS_Store" -delete
 
 echo -e "\033[1;32mBuilding zip extension for OpenCart 3.x\033[0m"
 zip compropago-oc3.ocmod.zip -r upload -x "*.DS_Store"
-
-read -n 1 -s -r -p "Press any key to continue..."
