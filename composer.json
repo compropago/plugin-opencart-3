@@ -13,6 +13,9 @@
         "cash",
         "spei"
     ],
+    "config": {
+        "vendor-dir": "upload/system/library/compropago/vendor/"
+    },
     "require": {
         "compropago/php-sdk": "5.0.0.*"
     },
