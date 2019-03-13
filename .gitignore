@@ -1,8 +1,4 @@
 .DS_Store
 .vscode/
-.travis.yml
-*.zip
-phpunit.xml
-tests/
-examples/
-docs/
+*.ocmod.zip
+upload/system/library/compropago/vendor/
