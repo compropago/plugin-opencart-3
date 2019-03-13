@@ -203,7 +203,8 @@ class ControllerExtensionPaymentCompropagoSpei extends Controller
             $this->config->get('payment_compropago_publickey'),
             $this->config->get('payment_compropago_privatekey')
         );
-        $new_order = $client->createOrder($order_info)['data'];
+        $new_order = $client->createOrder( $order_info )['data'];
+        
         $this->add_transaction($new_order);
 
         return $new_order;
